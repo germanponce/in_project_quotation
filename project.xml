@@ -1,0 +1,39 @@
+<openerp>
+<data>
+
+<!-- =============================== HERENCIA ============================ -->
+
+
+        <record model="ir.ui.view" id="inherit_task_in_gr">
+            <field name="name">inherit.project.task.form.view</field>
+            <field name="model">project.task</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="project.view_task_form2"/>
+            <field name="arch" type="xml">
+            <data>
+                <page string="Extra Info" position="before">
+                    <page string="Presupuesto">
+                        <field name="line_ids" >
+                            <tree string="Lineas de Presupuesto" editable="bottom">
+                                <field name="product_id" on_change="on_change_product(product_id)"/>
+                                <field name="uom_id" />
+                                <field name="list_price" on_change="on_change_product_total(list_price,qty)"/>
+                                <field name="qty" on_change="on_change_product_total(list_price,qty)"/>
+                                <field name="total" />
+                            </tree>
+                        </field>
+                        <group class="oe_subtotal_footer oe_right" colspan="2" name="total">
+                                    <field name="total" />
+                                </group>
+                                <newline/>
+                                <group>
+                                </group>
+                    </page>
+                </page>
+            </data>
+            </field>
+        </record>
+
+
+</data>
+</openerp>
