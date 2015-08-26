@@ -13,6 +13,28 @@ from datetime import datetime, timedelta
 import time
 from openerp import SUPERUSER_ID
 
+class project_project(osv.osv):
+    _name = 'project.project'
+    _inherit ='project.project'
+
+    def _get_total(self, cr, uid, ids, field_name, arg, context=None):
+        result={}
+        total = 0.0
+        for rec in self.browse(cr, uid, ids, context=None):
+            for line in rec.resume_ids:
+                total += line.total
+            result[rec.id] = total
+        return result
+
+    _columns = {
+        'resume_ids': fields.one2many('project.task','project_id','Resumen de Tareas'),
+        'total': fields.function(_get_total, string="Total", method=True, type='float', digits=(13,2), readonly=True, help='Total por la Cantidad y el Precio de cada Tarea.' ),
+
+        }
+
+    _defaults = {
+        }
+
 class project_task(osv.osv):
     _name = 'project.task'
     _inherit ='project.task'
@@ -64,17 +86,12 @@ class task_line_product(osv.osv):
     def on_change_product(self, cr, uid, ids, product_id, context=None):
         res = {}
         product_obj = self.pool.get('product.template')
-        print "############ EJECUTANDO "
-        print "############ PRODUCT IDS ", product_id
         if product_id:
             prod_br = product_obj.browse(cr, uid, product_id, context)
-            print "############ UOM ID >>> ", prod_br.uom_id.name
-            print "############ LIST PRICE >>> ", prod_br.list_price
             res.update({
                 'uom_id': prod_br.uom_id.id,
                 'list_price': prod_br.list_price,
                 })
-        print "################ RES >>> ", res
         return {'value':res}
 
     def on_change_product_total(self, cr, uid, ids, list_price, qty, context=None):
